@@ -1,0 +1,18 @@
+# Don't accidentally commit your API key
+.env
+.env.local
+*.env
+
+# Mac junk
+.DS_Store
+.DS_Store?
+._*
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
