@@ -14,17 +14,10 @@
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script>
-const _warn = console.warn;
+const _tw_warn = console.warn;
 console.warn = (...args) => {
   if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
-  _warn.apply(console, args);
-};
-</script>
-<script>
-const _warn = console.warn;
-console.warn = (...args) => {
-  if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
-  _warn.apply(console, args);
+  _tw_warn.apply(console, args);
 };
 </script>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -357,8 +350,8 @@ footer{border-top:1px solid var(--border);padding:48px 24px;position:relative;z-
       <p class="section-label">Real students</p>
       <h2 class="section-title">They were nervous too.</h2>
       <div class="testimonials-grid">
-        <div class="testimonial"><p class="testimonial-quote">I'd never had a job before and had no idea how to even start a resume. CareerReady walked me through everything and I got hired at Shoppers Drug Mart two weeks later.</p><div class="testimonial-author"><div class="author-avatar">S</div><div><div class="author-name">Sara K.</div><div class="author-role">Grade 11, Ottawa</div></div></div></div>
-        <div class="testimonial"><p class="testimonial-quote">The ATS analysis blew my mind. My resume was missing like 6 keywords from the Home Depot posting. Fixed them, applied, got a call the next day.</p><div class="testimonial-author"><div class="author-avatar">M</div><div><div class="author-name">Marcus T.</div><div class="author-role">1st year, TMU</div></div></div></div>
+        <div class="testimonial"><p class="testimonial-quote">I'd never had a job before and had no idea how to even start a resume. CareerReady walked me through everything and I got hired at Shoppers Drug Mart two weeks later.</p><div class="testimonial-author"><div class="author-avatar">S</div><div><div class="author-name">Sara K.</div><div class="author-role">Grade 12, Ottawa</div></div></div></div>
+        <div class="testimonial"><p class="testimonial-quote">The ATS analysis blew my mind. My resume was missing like 6 keywords from the Home Depot posting. Fixed them, applied, got a call the next day.</p><div class="testimonial-author"><div class="author-avatar">M</div><div><div class="author-name">Marcus T.</div><div class="author-role">2nd year, Ryerson</div></div></div></div>
         <div class="testimonial"><p class="testimonial-quote">The interview prep section is actually crazy. It gave me questions I wasn't expecting and I had a full answer ready for each one. Got the job at Loblaws.</p><div class="testimonial-author"><div class="author-avatar">A</div><div><div class="author-name">Aisha M.</div><div class="author-role">Grade 12, Mississauga</div></div></div></div>
       </div>
     </section>
@@ -1045,8 +1038,8 @@ function Stage1({ onComplete, savedProfile }) {
           {["High school","University / College"].map(opt=><button key={opt} onClick={()=>upd("schoolType",opt)} className={`w-full py-3 px-4 rounded-xl border text-left text-sm font-medium transition-all ${p.schoolType===opt?"bg-indigo-500/20 border-indigo-500 text-indigo-200":"border-slate-600 text-slate-300 hover:border-slate-500 hover:bg-slate-800"}`}>{opt}</button>)}
           {p.schoolType&&(
             <div className="flex flex-col gap-3 mt-1">
-              <FInput label="School name" value={p.schoolName} onChange={v=>upd("schoolName",v)} placeholder="e.g. Oakville Trafalgar" />
-              <FInput label={p.schoolType==="High school"?"Grade":"Year & program"} value={p.grade} onChange={v=>upd("grade",v)} placeholder={p.schoolType==="High school"?"e.g. Grade 11":"e.g. 1st year, Mechanical Engineering"} />
+              <FInput label="School name" value={p.schoolName} onChange={v=>upd("schoolName",v)} placeholder="e.g. Riverside Secondary School" />
+              <FInput label={p.schoolType==="High school"?"Grade":"Year & program"} value={p.grade} onChange={v=>upd("grade",v)} placeholder={p.schoolType==="High school"?"e.g. Grade 10":"e.g. 2nd year, Business Administration"} />
             </div>
           )}
         </div>
@@ -1246,7 +1239,7 @@ function Stage2A({ profile, onComplete, savedDraft }) {
       <div className="flex flex-col gap-3">
         <div className="bg-slate-900/50 rounded-xl px-4 py-2.5 border border-slate-700"><p className="text-xs text-slate-500">Name</p><p className="text-slate-200 text-sm font-medium">{profile.name}</p></div>
         <div className="bg-slate-900/50 rounded-xl px-4 py-2.5 border border-slate-700"><p className="text-xs text-slate-500">City</p><p className="text-slate-200 text-sm font-medium">{profile.city}</p></div>
-        <FInput label="Phone" value={data.phone} onChange={v=>upd("phone",v)} placeholder="647-555-0123"/>
+        <FInput label="Phone" value={data.phone} onChange={v=>upd("phone",v)} placeholder="416-555-0199"/>
         <FInput label="Email" type="email" value={data.email} onChange={v=>upd("email",v)} placeholder="alex@email.com"/>
         <FInput label="LinkedIn URL" value={data.linkedin} onChange={v=>upd("linkedin",v)} placeholder="linkedin.com/in/yourname" helper="Optional"/>
       </div>
@@ -1313,7 +1306,7 @@ function Stage2A({ profile, onComplete, savedDraft }) {
               <div className="flex flex-col gap-2.5">
                 <FInput value={e.role} onChange={v=>updExp(i,"role",v)} placeholder="Role / What you did (e.g. Cashier, Volunteer)"/>
                 <FInput value={e.where} onChange={v=>updExp(i,"where",v)} placeholder="Company / Organisation (e.g. Walmart)"/>
-                <FInput value={e.city} onChange={v=>updExp(i,"city",v)} placeholder="City (e.g. Oakville, ON)"/>
+                <FInput value={e.city} onChange={v=>updExp(i,"city",v)} placeholder="City (e.g. Mississauga, ON)"/>
                 <div className="flex gap-2">
                   <div className="flex-1"><FInput value={e.startDate} onChange={v=>updExp(i,"startDate",v)} placeholder="Start (e.g. Sept 2023)"/></div>
                   <div className="flex-1">
@@ -1409,9 +1402,9 @@ function Stage2A({ profile, onComplete, savedDraft }) {
                 {i>0&&<button onClick={()=>setData(d=>({...d,education:d.education.filter((_,j)=>j!==i)}))} className="text-xs text-red-400">Remove</button>}
               </div>
               <div className="flex flex-col gap-2.5">
-                <FInput label="School name" value={e.school} onChange={v=>updEdu(i,"school",v)} placeholder="e.g. Oakville Trafalgar High School"/>
-                <FInput label="Degree / Program / Grade" value={e.degree} onChange={v=>updEdu(i,"degree",v)} placeholder="e.g. Grade 12 / 1st year Mechanical Engineering"/>
-                <FInput label="City" value={e.city} onChange={v=>updEdu(i,"city",v)} placeholder="e.g. Oakville, ON"/>
+                <FInput label="School name" value={e.school} onChange={v=>updEdu(i,"school",v)} placeholder="e.g. Riverside Secondary School"/>
+                <FInput label="Degree / Program / Grade" value={e.degree} onChange={v=>updEdu(i,"degree",v)} placeholder="e.g. Grade 10 / 2nd year Business Administration"/>
+                <FInput label="City" value={e.city} onChange={v=>updEdu(i,"city",v)} placeholder="e.g. Mississauga, ON"/>
                 <div className="flex gap-2">
                   <div className="flex-1"><FInput label="Start date" value={e.startDate} onChange={v=>updEdu(i,"startDate",v)} placeholder="e.g. Sept 2021"/></div>
                   <div className="flex-1">

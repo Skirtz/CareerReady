@@ -8,6 +8,12 @@ Built by [@Skirtz](https://github.com/Skirtz)
 
 ---
 
+## Live Demo
+
+> Coming soon — deploy instructions below
+
+---
+
 ## What it does
 
 **6 steps. One complete application.**
@@ -26,40 +32,18 @@ Built by [@Skirtz](https://github.com/Skirtz)
 ## Features
 
 - **ATS keyword analysis** — checks your resume against the actual keywords companies screen for
-- **Company-specific keywords** — knows Home Depot's Pro Xtra, Best Buy's Geek Squad, Walmart+, and 14 other major retailers
-- **Hallucination check** — every claim in your generated resume is verified against what you told it. It never invents experience you don't have
+- **Company-specific keywords** — knows Home Depot's Pro Xtra, Best Buy's Geek Squad, Walmart+, and 14 major retailers
+- **Hallucination check** — every claim in your generated resume is verified. It never invents experience you don't have
 - **Objective vs Summary detection** — automatically picks the right format based on your experience level
 - **Hidden experience discovery** — 5 questions that find experience you didn't know you had
 - **Quantification prompts** — asks "how many customers per shift?" to make bullets specific
 - **Running ATS score** — shows your projected score as you toggle keyword improvements
-- **Hire probability** — realistic estimate of your chances with a specific fix to improve it
+- **Hire probability** — realistic estimate with a specific fix to improve it
 - **LinkedIn advisory** — before/after advice for every section of your LinkedIn profile
 - **Resume Freshness Tracker** — tells you when your resume needs updating
 - **Auto-saves everything** — close the tab and come back, nothing is lost
+- **Download resume** — download as `.txt` or formatted `.html` (open in browser → Ctrl+P → Save as PDF)
 - **3 saved resume versions** — keep different resumes for different job types
-- **↑↓ reordering** — drag experience, education, and activities into any order
-- **Practice mode** — type your answer to any interview question and get feedback
-
----
-
-## How to run it
-
-### Option 1 — Claude.ai (easiest, no setup)
-1. Go to [claude.ai](https://claude.ai)
-2. Start a new chat
-3. Upload `CareerReady.jsx`
-4. The app runs live in the chat
-
-### Option 2 — Standalone HTML (share with anyone)
-1. Open `CareerReady_combined.html` in any browser
-2. Enter your [Anthropic API key](https://console.anthropic.com) (free $5 credit on signup)
-3. Full app runs locally — no server needed
-
-### Option 3 — No API key required (host it yourself)
-1. Deploy `cloudflare-worker.js` to [Cloudflare Workers](https://workers.cloudflare.com) (free — 100k requests/day)
-2. Add your `ANTHROPIC_API_KEY` as an encrypted secret in the Worker settings
-3. Replace `YOUR_WORKER_URL_HERE` in `CareerReady_proxy.html` with your Worker URL
-4. Host `CareerReady_proxy.html` anywhere — users need no API key
 
 ---
 
@@ -67,13 +51,49 @@ Built by [@Skirtz](https://github.com/Skirtz)
 
 ```
 CareerReady/
-├── CareerReady.jsx              # Main app — use this in Claude.ai
-├── CareerReady_combined.html    # Standalone: marketing site + app in one file
-├── CareerReady_proxy.html       # Standalone: no API key required (needs worker)
+├── CareerReady.jsx              # Main app — use this in Claude.ai for testing
+├── CareerReady_combined.html    # Full site: landing page + app in one file
+├── CareerReady_proxy.html       # No API key required version (needs Cloudflare Worker)
 ├── cloudflare-worker.js         # Cloudflare Worker proxy (hides your API key)
 ├── index.html                   # Marketing website only (Home, Pricing, Contact)
 └── README.md                    # This file
 ```
+
+---
+
+## How to run it
+
+### Option 1 — Claude.ai (no setup, instant)
+1. Go to [claude.ai](https://claude.ai)
+2. Start a new chat
+3. Upload `CareerReady.jsx`
+4. The app runs live in the chat — no API key needed
+
+### Option 2 — Host it free on Netlify (recommended)
+The easiest way to get a permanent public URL in under 2 minutes:
+
+1. Go to [app.netlify.com](https://app.netlify.com) and sign up free with GitHub
+2. Click **Add new site → Import an existing project → GitHub**
+3. Select your `CareerReady` repo
+4. Set **Publish directory** to `.` (just a dot)
+5. Click **Deploy site**
+6. Netlify gives you a live URL like `https://careerready.netlify.app`
+7. Every time you push to GitHub, Netlify auto-deploys — no manual uploads ever again
+
+Your `CareerReady_combined.html` is the file users will land on. Rename it to `index.html` in your repo for Netlify to serve it automatically as the homepage.
+
+### Option 3 — GitHub Pages (also free)
+1. Go to your repo → **Settings → Pages**
+2. Source: **Deploy from a branch**
+3. Branch: `main`, folder: `/ (root)`
+4. Save — your site is live at `https://skirtz.github.io/CareerReady`
+5. Rename `CareerReady_combined.html` to `index.html` so it loads as the homepage
+
+### Option 4 — No API key version
+1. Deploy `cloudflare-worker.js` to [Cloudflare Workers](https://workers.cloudflare.com) (free — 100k req/day)
+2. Add your `ANTHROPIC_API_KEY` as an encrypted environment variable
+3. Replace `YOUR_WORKER_URL_HERE` in `CareerReady_proxy.html` with your Worker URL
+4. Host `CareerReady_proxy.html` — users need no API key at all
 
 ---
 
@@ -90,29 +110,15 @@ No backend. No database. No npm install. No build step. One file.
 
 ---
 
-## AI architecture
+## How to get a PDF of your resume
 
-Each AI-heavy stage is split into focused API calls to avoid token limits:
+Since the app runs in a browser, the best way to save your resume as a PDF is:
 
-- **Stage 3 (Job Analysis):** 2 calls — keywords/scores (2500 tokens) + fit/company (2000 tokens)
-- **Stage 5 (Interview Prep):** 2 calls — questions/scenarios (2000 tokens) + curveball/questions-to-ask (1000 tokens)
-- **All calls:** use `safeJSON()` — 4-strategy resilient parser that handles truncated or malformed responses
-
----
-
-## Screenshots
-
-> Coming soon — video demo on LinkedIn
-
----
-
-## Roadmap
-
-- [ ] Cross-device sync (account system)
-- [ ] Browser extension for Indeed/LinkedIn job scraping
-- [ ] Application history tracker
-- [ ] Cover letter ATS score gate (90+ required)
-- [ ] More company keyword maps
+1. Click **⬇ Download formatted** in the Documents tab
+2. Open the downloaded `.html` file in your browser
+3. Press **Ctrl+P** (Windows) or **Cmd+P** (Mac)
+4. Change destination to **Save as PDF**
+5. Click Save
 
 ---
 

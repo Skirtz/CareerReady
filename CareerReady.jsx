@@ -439,8 +439,8 @@ function Stage1({ onComplete, savedProfile }) {
           {["High school","University / College"].map(opt=><button key={opt} onClick={()=>upd("schoolType",opt)} className={`w-full py-3 px-4 rounded-xl border text-left text-sm font-medium transition-all ${p.schoolType===opt?"bg-indigo-500/20 border-indigo-500 text-indigo-200":"border-slate-600 text-slate-300 hover:border-slate-500 hover:bg-slate-800"}`}>{opt}</button>)}
           {p.schoolType&&(
             <div className="flex flex-col gap-3 mt-1">
-              <FInput label="School name" value={p.schoolName} onChange={v=>upd("schoolName",v)} placeholder="e.g. Oakville Trafalgar" />
-              <FInput label={p.schoolType==="High school"?"Grade":"Year & program"} value={p.grade} onChange={v=>upd("grade",v)} placeholder={p.schoolType==="High school"?"e.g. Grade 11":"e.g. 1st year, Mechanical Engineering"} />
+              <FInput label="School name" value={p.schoolName} onChange={v=>upd("schoolName",v)} placeholder="e.g. Riverside Secondary School" />
+              <FInput label={p.schoolType==="High school"?"Grade":"Year & program"} value={p.grade} onChange={v=>upd("grade",v)} placeholder={p.schoolType==="High school"?"e.g. Grade 10":"e.g. 2nd year, Business Administration"} />
             </div>
           )}
         </div>
@@ -640,7 +640,7 @@ function Stage2A({ profile, onComplete, savedDraft }) {
       <div className="flex flex-col gap-3">
         <div className="bg-slate-900/50 rounded-xl px-4 py-2.5 border border-slate-700"><p className="text-xs text-slate-500">Name</p><p className="text-slate-200 text-sm font-medium">{profile.name}</p></div>
         <div className="bg-slate-900/50 rounded-xl px-4 py-2.5 border border-slate-700"><p className="text-xs text-slate-500">City</p><p className="text-slate-200 text-sm font-medium">{profile.city}</p></div>
-        <FInput label="Phone" value={data.phone} onChange={v=>upd("phone",v)} placeholder="647-555-0123"/>
+        <FInput label="Phone" value={data.phone} onChange={v=>upd("phone",v)} placeholder="416-555-0199"/>
         <FInput label="Email" type="email" value={data.email} onChange={v=>upd("email",v)} placeholder="alex@email.com"/>
         <FInput label="LinkedIn URL" value={data.linkedin} onChange={v=>upd("linkedin",v)} placeholder="linkedin.com/in/yourname" helper="Optional"/>
       </div>
@@ -707,7 +707,7 @@ function Stage2A({ profile, onComplete, savedDraft }) {
               <div className="flex flex-col gap-2.5">
                 <FInput value={e.role} onChange={v=>updExp(i,"role",v)} placeholder="Role / What you did (e.g. Cashier, Volunteer)"/>
                 <FInput value={e.where} onChange={v=>updExp(i,"where",v)} placeholder="Company / Organisation (e.g. Walmart)"/>
-                <FInput value={e.city} onChange={v=>updExp(i,"city",v)} placeholder="City (e.g. Oakville, ON)"/>
+                <FInput value={e.city} onChange={v=>updExp(i,"city",v)} placeholder="City (e.g. Mississauga, ON)"/>
                 <div className="flex gap-2">
                   <div className="flex-1"><FInput value={e.startDate} onChange={v=>updExp(i,"startDate",v)} placeholder="Start (e.g. Sept 2023)"/></div>
                   <div className="flex-1">
@@ -803,9 +803,9 @@ function Stage2A({ profile, onComplete, savedDraft }) {
                 {i>0&&<button onClick={()=>setData(d=>({...d,education:d.education.filter((_,j)=>j!==i)}))} className="text-xs text-red-400">Remove</button>}
               </div>
               <div className="flex flex-col gap-2.5">
-                <FInput label="School name" value={e.school} onChange={v=>updEdu(i,"school",v)} placeholder="e.g. Oakville Trafalgar High School"/>
-                <FInput label="Degree / Program / Grade" value={e.degree} onChange={v=>updEdu(i,"degree",v)} placeholder="e.g. Grade 12 / 1st year Mechanical Engineering"/>
-                <FInput label="City" value={e.city} onChange={v=>updEdu(i,"city",v)} placeholder="e.g. Oakville, ON"/>
+                <FInput label="School name" value={e.school} onChange={v=>updEdu(i,"school",v)} placeholder="e.g. Riverside Secondary School"/>
+                <FInput label="Degree / Program / Grade" value={e.degree} onChange={v=>updEdu(i,"degree",v)} placeholder="e.g. Grade 10 / 2nd year Business Administration"/>
+                <FInput label="City" value={e.city} onChange={v=>updEdu(i,"city",v)} placeholder="e.g. Mississauga, ON"/>
                 <div className="flex gap-2">
                   <div className="flex-1"><FInput label="Start date" value={e.startDate} onChange={v=>updEdu(i,"startDate",v)} placeholder="e.g. Sept 2021"/></div>
                   <div className="flex-1">
@@ -1394,8 +1394,74 @@ function Stage4({ profile, resumeData, jobData, onComplete, savedDocs }) {
     setCoverLoading(false);
   };
 
+  // ── COPY — iframe-safe fallback ──────────────────────────────────────────
   const copy = async(text, label) => {
-    try { await navigator.clipboard.writeText(text); setCopied(label); setTimeout(()=>setCopied(""),2000); showToast("Copied to clipboard ✓","success"); } catch {}
+    // Try modern clipboard API first
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(label); setTimeout(()=>setCopied(""),2500);
+      showToast("Copied to clipboard ✓","success"); return;
+    } catch {}
+    // Fallback: create a temporary textarea, select it, execCommand copy
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.cssText = "position:fixed;top:0;left:0;width:2em;height:2em;padding:0;border:none;outline:none;boxShadow:none;background:transparent;";
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      if (ok) {
+        setCopied(label); setTimeout(()=>setCopied(""),2500);
+        showToast("Copied ✓","success"); return;
+      }
+    } catch {}
+    // Last resort: show a modal with text pre-selected so user can Ctrl+C
+    showToast("Press Ctrl+C (or Cmd+C) to copy the text below","save");
+    setCopied(label+"_manual"); setTimeout(()=>setCopied(""),4000);
+  };
+
+  // ── PRINT — in-page modal approach (works in iframes, no popup needed) ──
+  // ── DOWNLOAD ─────────────────────────────────────────────────────────────
+  const downloadTxt = (text, filename) => {
+    const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+    showToast("Download started ✓","success");
+  };
+
+  const downloadHtml = (text, filename, title="Resume") => {
+    const lines = text.split("\n");
+    let body = "";
+    for (const line of lines) {
+      const t = line.trim();
+      if (!t) { body += "<br/>"; continue; }
+      if (/^[A-Z][A-Z\s&]+$/.test(t) && t.length > 2 && t.length < 50) {
+        body += `<div class="sh">${t}</div>`;
+      } else if (t.startsWith("•") || t.startsWith("-") || t.startsWith("·")) {
+        body += `<div class="b">${t.replace(/^[•\-·]\s*/,"")}</div>`;
+      } else if (t.includes("@") && t.includes("·")) {
+        body += `<div class="ct">${t}</div>`;
+      } else {
+        body += `<p>${t}</p>`;
+      }
+    }
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>${title}</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Arial,sans-serif;font-size:11pt;line-height:1.55;color:#111;max-width:780px;margin:0 auto;padding:48px 56px;}
+h1{font-size:20pt;font-weight:bold;margin-bottom:3px;}.ct{font-size:10pt;color:#444;margin-bottom:16px;border-bottom:1.5px solid #111;padding-bottom:6px;}
+.sh{font-size:10.5pt;font-weight:bold;text-transform:uppercase;letter-spacing:1.5px;border-bottom:1px solid #111;padding-bottom:2px;margin:16px 0 7px;}
+.b{margin-left:18px;margin-bottom:3px;font-size:10.5pt;}.b::before{content:"• ";}p{margin-bottom:4px;font-size:10.5pt;}br{display:block;margin:4px 0;}
+@media print{body{padding:0;}}</style></head><body>${body}</body></html>`;
+    const blob = new Blob([html], {type:"text/html;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+    showToast("Download started ✓","success");
   };
   const saveVersion = async() => {
     if (!generatedResume||!versionLabel.trim()) return;
@@ -1470,9 +1536,24 @@ function Stage4({ profile, resumeData, jobData, onComplete, savedDocs }) {
                       </div>
                     )}
                     <ResumeDoc text={generatedResume}/>
+                    {/* Manual copy fallback if clipboard API fails */}
+                    {copied==="resume_manual"&&(
+                      <div className="bg-slate-800 border border-slate-600 rounded-xl p-3">
+                        <p className="text-xs text-slate-400 mb-2">Select all and press Ctrl+C (Cmd+C on Mac):</p>
+                        <textarea readOnly value={generatedResume} rows={6} onClick={e=>e.target.select()} className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-300 font-mono resize-none focus:outline-none"/>
+                      </div>
+                    )}
                     <div className="flex gap-2">
-                      <Btn variant="secondary" onClick={()=>copy(generatedResume,"resume")} className="flex-1">{copied==="resume"?"✓ Copied!":"Copy to clipboard"}</Btn>
-                      <Btn variant="ghost" onClick={()=>window.print()} size="sm">Print</Btn>
+                      <Btn variant="secondary" onClick={()=>copy(generatedResume,"resume")} className="flex-1">
+                        {copied==="resume"?"✓ Copied!":copied==="resume_manual"?"Select & Ctrl+C →":"Copy to clipboard"}
+                      </Btn>
+                    </div>
+                    <div className="flex gap-2">
+                      <Btn variant="secondary" size="sm" onClick={()=>downloadTxt(generatedResume,`${profile.name?.replace(/\s+/g,"_")||"Resume"}_Resume.txt`)} className="flex-1">⬇ Download .txt</Btn>
+                      <Btn variant="cyan" size="sm" onClick={()=>downloadHtml(generatedResume,`${profile.name?.replace(/\s+/g,"_")||"Resume"}_Resume.html`,"Resume")} className="flex-1">⬇ Download formatted</Btn>
+                    </div>
+                    <div className="bg-slate-800/60 border border-slate-700/40 rounded-xl p-3">
+                      <p className="text-xs text-slate-400">💡 <strong className="text-slate-300">Best way to get a PDF:</strong> Click "Download formatted" → open the .html file in your browser → press Ctrl+P / Cmd+P → Save as PDF</p>
                     </div>
                     <div className="flex gap-2">
                       <Btn variant="secondary" onClick={()=>{setGeneratedResume("");setFlagsDone(false);}} className="flex-1" size="sm">↺ Regenerate resume</Btn>
@@ -1517,9 +1598,20 @@ function Stage4({ profile, resumeData, jobData, onComplete, savedDocs }) {
             ):(
               <>
                 <ResumeDoc text={generatedCover}/>
+                {copied==="cover_manual"&&(
+                  <div className="bg-slate-800 border border-slate-600 rounded-xl p-3">
+                    <p className="text-xs text-slate-400 mb-2">Select all and press Ctrl+C (Cmd+C on Mac):</p>
+                    <textarea readOnly value={generatedCover} rows={6} onClick={e=>e.target.select()} className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-300 font-mono resize-none focus:outline-none"/>
+                  </div>
+                )}
                 <div className="flex gap-2">
-                  <Btn variant="secondary" onClick={()=>copy(generatedCover,"cover")} className="flex-1">{copied==="cover"?"✓ Copied!":"Copy to clipboard"}</Btn>
-                  <Btn variant="ghost" onClick={()=>window.print()} size="sm">Print</Btn>
+                  <Btn variant="secondary" onClick={()=>copy(generatedCover,"cover")} className="flex-1">
+                    {copied==="cover"?"✓ Copied!":copied==="cover_manual"?"Select & Ctrl+C →":"Copy to clipboard"}
+                  </Btn>
+                </div>
+                <div className="flex gap-2">
+                  <Btn variant="secondary" size="sm" onClick={()=>downloadTxt(generatedCover,`${profile.name?.replace(/\s+/g,"_")||"Cover"}_CoverLetter.txt`)} className="flex-1">⬇ Download .txt</Btn>
+                  <Btn variant="cyan" size="sm" onClick={()=>downloadHtml(generatedCover,`${profile.name?.replace(/\s+/g,"_")||"Cover"}_CoverLetter.html`,"Cover Letter")} className="flex-1">⬇ Download formatted</Btn>
                 </div>
                 <Btn variant="secondary" onClick={()=>setGeneratedCover("")} size="sm">↺ Regenerate cover letter</Btn>
               </>
